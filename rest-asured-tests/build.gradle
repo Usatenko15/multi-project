@@ -1,0 +1,24 @@
+plugins {
+    id 'java'
+}
+
+
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.9.0'
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.9.0'
+    testImplementation 'io.rest-assured:rest-assured:5.1.1'
+    testImplementation 'io.rest-assured:json-path:5.1.1'
+    implementation group: 'org.json', name: 'json', version: '20220320'
+
+    compileOnly 'org.projectlombok:lombok'
+    annotationProcessor 'org.projectlombok:lombok'
+}
+
+test {
+    useJUnitPlatform()
+}

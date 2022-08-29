@@ -1,0 +1,3 @@
+rootProject.name = 'rest-asured-tests'
+
+include 'PetProject2'

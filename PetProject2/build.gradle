@@ -1,0 +1,84 @@
+plugins {
+    id 'org.springframework.boot' version '2.7.1'
+    id 'io.spring.dependency-management' version '1.0.11.RELEASE'
+    id 'java'
+    id 'jacoco'
+    id "org.flywaydb.flyway" version "9.0.1"
+    id "org.sonarqube" version "3.4.0.2513"
+    id "com.avast.gradle.docker-compose" version "0.16.8"
+    id 'info.solidsoft.pitest' version '1.7.4'
+//    id 'checkstyle'
+}
+
+group = 'com.example'
+version = '0.0.1-SNAPSHOT'
+sourceCompatibility = '11'
+
+configurations {
+    compileOnly {
+        extendsFrom annotationProcessor
+    }
+}
+
+pitest {
+    junit5PluginVersion = '0.15'    //or 0.14 for Junit Jupiter 5.7 (JUnit Platform 1.7)
+    excludedClasses = ['com.example.petproject2.config.**', 'com.example.petproject2.domain.model.**', 'com.example.petproject2.persistance.entity.**', 'com.example.petproject2.persistance.mappers.**', 'com.example.petproject2.presentation.DTO.**', 'com.example.petproject2.presentation.mapper.**']
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation 'org.flywaydb:flyway-core'
+    compileOnly 'org.projectlombok:lombok'
+    developmentOnly 'org.springframework.boot:spring-boot-devtools'
+    runtimeOnly 'org.postgresql:postgresql'
+    annotationProcessor 'org.projectlombok:lombok'
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+
+    implementation 'org.mapstruct:mapstruct:1.5.2.Final'
+
+    annotationProcessor 'org.mapstruct:mapstruct-processor:1.5.2.Final'
+    implementation 'org.springframework.boot:spring-boot-starter-data-mongodb'
+    implementation 'com.amazonaws:aws-java-sdk-dynamodb:1.12.239'
+    implementation group: 'com.github.derjust', name: 'spring-data-dynamodb', version: '5.1.0'
+
+    implementation 'org.sonarsource.scanner.maven:sonar-maven-plugin:3.9.1.2184'
+    implementation 'org.apache.maven.plugins:maven-surefire-plugin:3.0.0-M7'
+}
+
+dockerCompose {
+    useComposeFiles = ['docker-compose.yml']
+}
+
+tasks.named('test') {
+    useJUnitPlatform()
+    finalizedBy jacocoTestReport
+}
+
+jacocoTestReport{
+    dependsOn test
+    reports {
+        xml.enabled(true)
+    }
+}
+
+sonarqube {
+    properties{
+        property 'sonar.coverage.exclusions', "**/com/example/petproject2/domain/model/**, **/com/example/petproject2/persistance/entity/**, **/com/example/petproject2/persistance/mappers/**, **/com/example/petproject2/presentation/DTO/**, **/com/example/petproject2/config/**, **/*PetProject2Application.java"
+    }
+}
+
+jacoco {
+    toolVersion = "0.8.8"
+}
+
+flyway {
+    url = 'jdbc:postgresql://localhost:5432/db_pet2'
+    user = 'postgres'
+    password = '123'
+    cleanDisabled = false
+}

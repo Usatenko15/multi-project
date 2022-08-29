@@ -1,0 +1,4 @@
+rootProject.name = 'multi-project'
+include 'rest-asured-tests'
+include 'PetProject2'
+

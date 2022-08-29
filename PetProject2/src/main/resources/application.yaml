@@ -1,0 +1,20 @@
+spring:
+  datasource:
+    url: jdbc:postgresql://dbpet.cwmcmtmngjzv.eu-central-1.rds.amazonaws.com:5432/db_pet2
+    username: postgres
+    password: postgres
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    show-sql: true
+  flyway:
+    clean-disabled: false
+
+  data:
+    mongodb:
+      database: dp_pet
+
+#amazon:
+#  aws:
+server:
+  port: 8080
+#    accesskey:

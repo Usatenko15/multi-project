@@ -1,0 +1,4 @@
+# Project exclude paths
+/.gradle/
+/rest-asured-tests/build/
+/rest-asured-tests/build/classes/java/test/
