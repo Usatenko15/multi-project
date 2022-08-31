@@ -1,5 +1,6 @@
 import io.restassured.http.ContentType;
 import org.json.JSONObject;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
 import static io.restassured.RestAssured.given;
@@ -8,6 +9,21 @@ import static org.hamcrest.Matchers.notNullValue;
 
 public class RestAssuredTests {
 
+    @BeforeAll
+    public static void setup() {
+        JSONObject jsonObj = new JSONObject()
+                .put("name","test");
+
+        given()
+                .contentType(ContentType.JSON)
+                .body(jsonObj.toString())
+                .post("http://localhost:8083/api/v1/product");
+
+        given()
+                .contentType(ContentType.JSON)
+                .body(jsonObj.toString())
+                .post("http://localhost:8083/api/v1/customer");
+    }
 
     @Test
     public void createProduct () {

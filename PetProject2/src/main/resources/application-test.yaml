@@ -1,0 +1,22 @@
+spring:
+  datasource:
+    url: jdbc:h2:mem:db_pet2;DB_CLOSE_DELAY=-1
+    username: sa
+    password: sa
+    driver-class-name: org.h2.Driver
+  jpa:
+    show-sql: true
+    database-platform: org.hibernate.dialect.PostgreSQL95Dialect
+  flyway:
+    clean-disabled: false
+    enabled: false
+
+  data:
+    mongodb:
+      database: dp_pet
+
+#amazon:
+#  aws:
+server:
+  port: 8083
+#    accesskey:
