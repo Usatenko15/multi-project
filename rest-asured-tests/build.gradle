@@ -22,7 +22,3 @@ dependencies {
 test {
     useJUnitPlatform()
 }
-
-dependencies {
-    implementation project(':PetProject2')
-}
