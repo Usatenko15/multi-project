@@ -53,10 +53,6 @@ dependencies {
     runtimeOnly 'com.h2database:h2'
 }
 
-dockerCompose {
-    useComposeFiles = ['docker-compose.yml']
-}
-
 tasks.named('test') {
     useJUnitPlatform()
     finalizedBy jacocoTestReport

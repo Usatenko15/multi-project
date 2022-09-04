@@ -13,8 +13,5 @@ spring:
     mongodb:
       database: dp_pet
 
-#amazon:
-#  aws:
 server:
   port: 8083
-#    accesskey:
