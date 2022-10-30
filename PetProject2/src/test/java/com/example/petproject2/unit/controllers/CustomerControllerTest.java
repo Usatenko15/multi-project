@@ -1,7 +1,9 @@
 package com.example.petproject2.unit.controllers;
 
 import com.example.petproject2.domain.model.CustomerModel;
+import com.example.petproject2.domain.model.ShoppingCartModel;
 import com.example.petproject2.domain.services.CustomerService;
+import com.example.petproject2.presentation.DTO.ShoppingCartDTO;
 import com.example.petproject2.presentation.DTO.CustomerDTO;
 import com.example.petproject2.presentation.controllers.CustomerController;
 import com.example.petproject2.presentation.mapper.MainMapper;
@@ -106,7 +108,7 @@ class CustomerControllerTest {
         customerController.saveCustomer(customerDTO);
 
         //then
-        verify(customerService).saveCustomer(customerModel);
+        verify(customerService).createCustomer(customerModel);
     }
 
     @Test
@@ -125,7 +127,7 @@ class CustomerControllerTest {
         //when
         when(mapper.toModel(any(CustomerDTO.class))).thenReturn(customerModel);
         customerModel.setCustomerId("1");
-        when(customerService.saveCustomer(any(CustomerModel.class))).thenReturn(customerModel);
+        when(customerService.createCustomer(any(CustomerModel.class))).thenReturn(customerModel);
         customerDTO.setCustomerId("1");
         when(mapper.toDTO(any(CustomerModel.class))).thenReturn(customerDTO);
 
@@ -208,5 +210,124 @@ class CustomerControllerTest {
         verify(mapper).toDTO(customerArgumentCaptor.capture());
         assertEquals(customerArgumentCaptor.getValue(), customer);
         assertEquals(savedCustomer, customerDTO);
+    }
+
+    @Test
+    void editCustomerCallsMapsDTOsToModel() {
+        //given
+        String customerId = "1";
+
+        var customerDTO = new CustomerDTO();
+        customerDTO.setCustomerId("1");
+        customerDTO.setName("customer");
+
+        //when
+        customerController.editCustomer(customerId, customerDTO);
+
+        //then
+        verify(mapper).toModel(customerDTO);
+    }
+
+    @Test
+    void editCustomerCallService() {
+        String customerId = "1";
+
+        var customerDTO = new CustomerDTO();
+        customerDTO.setName("customer");
+        customerDTO.setCustomerId("1");
+
+        var customerModel = new CustomerModel();
+        customerModel.setName("customer");
+        customerModel.setCustomerId("1");
+
+        //when
+        when(mapper.toModel(any(CustomerDTO.class))).thenReturn(customerModel);
+
+        customerController.editCustomer(customerId, customerDTO);
+
+        //then
+        verify(customerService).editCustomer(customerId, customerModel);
+    }
+
+    @Test
+    void editCustomerCallMappedCustomer() {
+        String customerId = "1";
+
+        var customerDTO = new CustomerDTO();
+        customerDTO.setName("customer");
+        customerDTO.setCustomerId("1");
+
+        var customerModel = new CustomerModel();
+        customerModel.setName("customer");
+        customerModel.setCustomerId("1");
+
+        var editedCustomerDTO = new CustomerDTO();
+        customerDTO.setName("customer");
+        customerDTO.setCustomerId("1");
+
+
+        //when
+        when(mapper.toModel(any(CustomerDTO.class))).thenReturn(customerModel);
+        when(customerService.editCustomer(customerId, customerModel)).thenReturn(customerModel);
+        when(mapper.toDTO(any(CustomerModel.class))).thenReturn(editedCustomerDTO);
+
+        var expectedCustomerDto = customerController.editCustomer(customerId, customerDTO);
+
+        //then
+        verify(mapper).toDTO(customerModel);
+        assertEquals(expectedCustomerDto, editedCustomerDTO);
+    }
+
+    @Test
+    void addProductToCustomer() {
+        //given
+        String customerId = "1";
+        String productId = "1";
+
+        var customerDTO = new CustomerDTO();
+        customerDTO.setCustomerId("1");
+        customerDTO.setName("customer");
+
+        //when
+        customerController.addProductToCustomer(customerId, productId);
+
+        //then
+        verify(customerService).addProductToBucket(customerId, productId);
+    }
+
+    @Test
+    void getCustomerBucketCallService() {
+        String customerId = "1";
+
+        var customerDTO = new CustomerDTO();
+        customerDTO.setName("customer");
+        customerDTO.setCustomerId("1");
+
+        var customerModel = new CustomerModel();
+        customerModel.setName("customer");
+        customerModel.setCustomerId("1");
+
+        //when
+        customerController.getCustomerBucket(customerId);
+
+        //then
+        verify(customerService).getCustomerBucket(customerId);
+    }
+
+    @Test
+    void getCustomerBucketCallMappedCustomer() {
+        //given
+        String customerId = "1";
+
+        var shoppingCardModel = new ShoppingCartModel();
+
+        //when
+        when(customerService.getCustomerBucket(customerId)).thenReturn(shoppingCardModel);
+        when(mapper.toDTO(any(ShoppingCartModel.class))).thenReturn(new ShoppingCartDTO());
+        customerController.getCustomerBucket(customerId);
+
+
+        //then
+        verify(mapper).toDTO(shoppingCardModel);
     }
 }

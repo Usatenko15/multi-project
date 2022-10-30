@@ -5,6 +5,7 @@ import com.example.petproject2.domain.model.ProductModel;
 import com.example.petproject2.persistance.entity.PostgresEntity.Customer;
 import com.example.petproject2.persistance.entity.PostgresEntity.Product;
 import com.example.petproject2.persistance.repository.PostgresRepository;
+import com.example.petproject2.persistance.repository.postgresrepository.BucketRepository;
 import com.example.petproject2.persistance.repository.postgresrepository.CustomerProductRepository;
 import com.example.petproject2.persistance.repository.postgresrepository.CustomerRepository;
 import com.example.petproject2.persistance.repository.postgresrepository.ProductRepository;
@@ -39,8 +40,11 @@ public class PostgresRepositoryTest {
     @MockBean
     private ProductRepository productRepository;
 
+    @MockBean
+    private BucketRepository bucketRepository;
+
     @Autowired
-    private PostgresRepository postgresRepository;
+    private PostgresRepository repository;
 
     @Test
     void findById() {
@@ -51,7 +55,7 @@ public class PostgresRepositoryTest {
         given(customerRepository.findById(1l)).willReturn(Optional.of(customer));
 
         // when
-        CustomerModel customerModel = postgresRepository.findById("1");
+        CustomerModel customerModel = repository.findById("1");
 
         // then
         assertEquals(customer.getName(), customerModel.getName());
@@ -66,7 +70,7 @@ public class PostgresRepositoryTest {
         given(customerRepository.findAll()).willReturn(List.of(customer));
 
         // when
-        CustomerModel customerModel = postgresRepository.findAllCustomers().get(0);
+        CustomerModel customerModel = repository.findAllCustomers().get(0);
 
         // then
         assertEquals(customer.getName(), customerModel.getName());
@@ -85,7 +89,7 @@ public class PostgresRepositoryTest {
         given(customerRepository.save(any())).willReturn(customer);
 
         // when
-        CustomerModel expectedCustomerModel = postgresRepository.saveCustomer(customerModel);
+        CustomerModel expectedCustomerModel = repository.saveCustomer(customerModel);
 
         // then
         assertEquals(customerModel.getName(), expectedCustomerModel.getName());
@@ -107,7 +111,7 @@ public class PostgresRepositoryTest {
         when(customerRepository.findById(any())).thenReturn(Optional.of(customer));
         when(productRepository.findById(any())).thenReturn(Optional.of(product));
 
-        CustomerModel expectedCustomerModel = postgresRepository.saveProductToCustomer("1", "1");
+        CustomerModel expectedCustomerModel = repository.saveProductToCustomer("1", "1");
 
         //then
         assertEquals(customer.getName(), expectedCustomerModel.getName());
@@ -124,7 +128,7 @@ public class PostgresRepositoryTest {
         given(productRepository.findById(1l)).willReturn(Optional.of(product));
 
         // when
-        ProductModel productModel = postgresRepository.findProductById("1");
+        ProductModel productModel = repository.findProductById("1");
 
         // then
         assertEquals(product.getName(), productModel.getName());
@@ -140,7 +144,7 @@ public class PostgresRepositoryTest {
         given(productRepository.findAll()).willReturn(List.of(product));
 
         // when
-        ProductModel productModel = postgresRepository.findAllProducts().get(0);
+        ProductModel productModel = repository.findAllProducts().get(0);
 
         // then
         assertEquals(product.getName(), productModel.getName());
@@ -159,7 +163,7 @@ public class PostgresRepositoryTest {
         given(productRepository.save(any())).willReturn(product);
 
         // when
-        ProductModel expectedProductModel = postgresRepository.saveProduct(productModel);
+        ProductModel expectedProductModel = repository.saveProduct(productModel);
 
         // then
         assertEquals(productModel.getName(), expectedProductModel.getName());

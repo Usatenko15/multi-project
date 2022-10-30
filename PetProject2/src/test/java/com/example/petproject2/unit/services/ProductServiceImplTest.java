@@ -12,6 +12,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -24,7 +25,7 @@ class ProductServiceImplTest {
     private ProductServiceImpl productService;
 
     @Test
-    void findAllProductsCallsService() {
+    void findAllProductsCallsRepository() {
         //given
 
         //when
@@ -50,7 +51,7 @@ class ProductServiceImplTest {
     }
 
     @Test
-    void findByProductIdCallsService() {
+    void findByProductIdCallsRepository() {
         //given
         String productId = "1";
 
@@ -72,7 +73,7 @@ class ProductServiceImplTest {
     }
 
     @Test
-    void saveProductCallsService() {
+    void saveProductCallsRepository() {
         //given
         ProductModel productModel = new ProductModel();
 
@@ -85,11 +86,56 @@ class ProductServiceImplTest {
 
     @Test
     void saveProduct() {
+        //given
         ProductModel product = new ProductModel();
         product.setProductId("1");
         product.setName("fdd");
 
+        //when
         when(repository.saveProduct(product)).thenReturn(product);
+
+        //then
         assertEquals(product,productService.saveProduct(product));
+    }
+
+    @Test
+    void editProductCallsRepository() {
+        //given
+        ProductModel productModel = new ProductModel();
+
+        //when
+        productService.editProduct("1", productModel);
+
+        //then
+        verify(repository).editProduct("1", productModel);
+    }
+
+    @Test
+    void editProduct() {
+        //given
+        ProductModel product = new ProductModel();
+        product.setProductId("1");
+        product.setName("fdd");
+
+        ProductModel editedProduct = new ProductModel();
+        product.setProductId("1");
+        product.setName("fddgggggggg");
+
+        //when
+        when(repository.editProduct("1", product)).thenReturn(editedProduct);
+
+        //then
+        assertEquals(editedProduct,productService.editProduct("1", product));
+    }
+
+    @Test
+    void deleteProduct() {
+        //given
+
+        //when
+        productService.deleteProductById("1");
+
+        //then
+        verify(repository).deleteProduct(any());
     }
 }

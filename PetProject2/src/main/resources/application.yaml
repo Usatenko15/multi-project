@@ -8,6 +8,7 @@ spring:
     show-sql: true
   flyway:
     clean-disabled: false
+    enabled: false
 
   data:
     mongodb:

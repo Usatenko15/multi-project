@@ -1,7 +1,9 @@
 package com.example.petproject2.persistance.mappers;
 
+import com.example.petproject2.domain.model.ShoppingCartModel;
 import com.example.petproject2.domain.model.CustomerModel;
 import com.example.petproject2.domain.model.ProductModel;
+import com.example.petproject2.persistance.entity.PostgresEntity.ShoppingCart;
 import com.example.petproject2.persistance.entity.PostgresEntity.Customer;
 import com.example.petproject2.persistance.entity.PostgresEntity.Product;
 import org.mapstruct.Mapper;
@@ -24,6 +26,7 @@ public interface PostgresMapper {
             customerModel.setCustomerId(String.valueOf(customer.getCustomerId()));
         }
         customerModel.setName(customer.getName());
+        customerModel.setShoppingCard(toModel(customer.getShoppingCart()));
         return customerModel;
     }
 
@@ -38,6 +41,7 @@ public interface PostgresMapper {
             productModel.setProductId(String.valueOf(product.getProductId()));
         }
         productModel.setName(product.getName());
+        productModel.setPrice(product.getPrice());
         return productModel;
     }
 
@@ -86,4 +90,9 @@ public interface PostgresMapper {
 
         return productModel;
     }
+
+    List<ProductModel> toModels(List<Product> products);
+
+    ShoppingCart toEntity(ShoppingCartModel shoppingCartModel);
+    ShoppingCartModel toModel(ShoppingCart shoppingCart);
 }

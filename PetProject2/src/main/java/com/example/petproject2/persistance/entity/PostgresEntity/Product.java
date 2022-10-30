@@ -19,6 +19,9 @@ public class Product {
     @Column(name = "product_name", nullable = false)
     private String name;
 
+    @Column(name = "product_price", nullable = false)
+    private double price;
+
     @OneToMany(mappedBy = "product",fetch = FetchType.LAZY, orphanRemoval = true)
     private Set<CustomerProduct> customerProducts = new HashSet<>();
 }

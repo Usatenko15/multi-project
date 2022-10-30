@@ -1,7 +1,9 @@
 package com.example.petproject2.unit.controllers;
 
+import com.example.petproject2.domain.model.CustomerModel;
 import com.example.petproject2.domain.model.ProductModel;
 import com.example.petproject2.domain.services.ProductService;
+import com.example.petproject2.presentation.DTO.CustomerDTO;
 import com.example.petproject2.presentation.DTO.ProductDTO;
 import com.example.petproject2.presentation.controllers.ProductController;
 import com.example.petproject2.presentation.mapper.MainMapper;
@@ -167,5 +169,71 @@ class ProductControllerTest {
 
         //then
         assertEquals(productController.saveProduct(productDTO), productDTO1);
+    }
+
+    @Test
+    void editProductCallsMapsDTOsToModel() {
+        //given
+        String productId = "1";
+
+        var productDTO = new ProductDTO();
+        productDTO.setProductId("1");
+        productDTO.setName("customer");
+
+        //when
+        productController.editProduct(productId, productDTO);
+
+        //then
+        verify(mapper).toModel(productDTO);
+    }
+
+    @Test
+    void editProductCallService() {
+        String productId = "1";
+
+        var productDTO = new ProductDTO();
+        productDTO.setProductId("1");
+        productDTO.setName("customer");
+
+        var productModel = new ProductModel();
+        productModel.setName("customer");
+        productModel.setProductId("1");
+
+        //when
+        when(mapper.toModel(any(ProductDTO.class))).thenReturn(productModel);
+
+        productController.editProduct(productId, productDTO);
+
+        //then
+        verify(productService).editProduct(productId, productModel);
+    }
+
+    @Test
+    void editProductCallMappedCustomer() {
+        String productId = "1";
+
+        var productDTO = new ProductDTO();
+        productDTO.setProductId("1");
+        productDTO.setName("product");
+
+        var productModel = new ProductModel();
+        productModel.setName("product");
+        productModel.setProductId("1");
+
+        var editedProductDTO = new ProductDTO();
+        editedProductDTO.setName("productfffffff");
+        editedProductDTO.setProductId("1");
+
+
+        //when
+        when(mapper.toModel(any(ProductDTO.class))).thenReturn(productModel);
+        when(productService.editProduct(productId, productModel)).thenReturn(productModel);
+        when(mapper.toDTO(any(ProductModel.class))).thenReturn(editedProductDTO);
+
+        var expectedCustomerDto = productController.editProduct(productId, productDTO);
+
+        //then
+        verify(mapper).toDTO(productModel);
+        assertEquals(expectedCustomerDto, editedProductDTO);
     }
 }

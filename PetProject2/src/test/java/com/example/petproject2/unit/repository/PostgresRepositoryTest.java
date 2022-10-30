@@ -317,6 +317,100 @@ class PostgresRepositoryTest {
     }
 
     @Test
+    void editCustomerCallsFindById() {
+        //given
+        var customer = new Customer();
+        customer.setName("customer");
+        customer.setCustomerId(1l);
+
+        var customerModel = new CustomerModel();
+        customerModel.setCustomerId("1");
+        customerModel.setName("customer");
+
+        //when
+        when(customerRepository.findById(any())).thenReturn(Optional.of(customer));
+        repository.editCustomer("1", customerModel);
+
+        //then
+        verify(customerRepository).findById(1l);
+    }
+
+    @Test
+    void editCustomerCallsMapsModelToEntities() {
+        //given
+        var customer = new Customer();
+        customer.setName("customer");
+        customer.setCustomerId(1l);
+
+        var customerModel = new CustomerModel();
+        customerModel.setCustomerId("1");
+        customerModel.setName("customer");
+
+        //when
+        when(customerRepository.findById(any())).thenReturn(Optional.of(customer));
+        repository.editCustomer("1", customerModel);
+
+        //then
+        verify(mapper).toEntity(customerModel);
+    }
+
+    @Test
+    void editCustomerCallsRepositorySave() {
+        //given
+        var customerModel = new CustomerModel();
+        customerModel.setName("customer");
+
+        var customer = new Customer();
+        customer.setName("customer");
+
+        //when
+        when(customerRepository.findById(any())).thenReturn(Optional.of(customer));
+        when(mapper.toEntity(any(CustomerModel.class))).thenReturn(customer);
+        customer.setCustomerId(1l);
+        repository.editCustomer("1", customerModel);
+
+        //then
+        verify(customerRepository).save(customer);
+    }
+
+    @Test
+    void editCustomerReturnsMappedCustomer() {
+        //given
+        var customerModel = new CustomerModel();
+        customerModel.setCustomerId("1");
+        customerModel.setName("customer");
+
+        var customerModel1 = new CustomerModel();
+        customerModel1.setCustomerId("1");
+        customerModel1.setName("customerdsfdsfdsf");
+
+        var customer = new Customer();
+        customer.setName("customer");
+
+        //when
+        when(customerRepository.findById(any())).thenReturn(Optional.of(customer));
+        when(mapper.toEntity(any(CustomerModel.class))).thenReturn(customer);
+        when(customerRepository.save(any(Customer.class))).thenReturn(customer);
+        when(mapper.toModel(any(Customer.class))).thenReturn(customerModel1);
+
+        var editedCustomer = repository.editCustomer("1", customerModel);
+
+        //then
+        assertEquals(editedCustomer, customerModel1);
+    }
+
+    @Test
+    void deleteCustomer() {
+        //given
+
+        //when
+        repository.deleteCustomer("1");
+
+        //then
+        verify(customerRepository).deleteById(1l);
+    }
+
+    @Test
     void findAllProductsCallsProductRepository() {
         //given
 
@@ -467,5 +561,98 @@ class PostgresRepositoryTest {
 
         //then
         assertEquals(repository.findProductById(productId), productModel);
+    }
+
+    @Test
+    void editProductCallsFindById() {
+        //given
+        var product = new Product();
+        product.setName("product");
+        product.setProductId(1l);
+
+        var productModel = new ProductModel();
+        productModel.setProductId("1");
+        productModel.setName("product");
+
+        //when
+        when(productRepository.findById(any())).thenReturn(Optional.of(product));
+        repository.editProduct("1", productModel);
+
+        //then
+        verify(productRepository).findById(1l);
+    }
+
+    @Test
+    void editProductCallsMapsModelToEntities() {
+        //given
+        var product = new Product();
+        product.setName("product");
+        product.setProductId(1l);
+
+        var productModel = new ProductModel();
+        productModel.setProductId("1");
+        productModel.setName("product");
+
+        //when
+        when(productRepository.findById(any())).thenReturn(Optional.of(product));
+        repository.editProduct("1", productModel);
+
+        //then
+        verify(mapper).toEntity(productModel);
+    }
+
+    @Test
+    void editProductCallsRepositorySave() {
+        //given
+        var productModel = new ProductModel();
+        productModel.setName("product");
+
+        var product = new Product();
+        product.setName("product");
+
+        //when
+        when(productRepository.findById(any())).thenReturn(Optional.of(product));
+        when(mapper.toEntity(any(ProductModel.class))).thenReturn(product);
+        repository.editProduct("1", productModel);
+
+        //then
+        verify(productRepository).save(product);
+    }
+
+    @Test
+    void editProductReturnsMappedCustomer() {
+        //given
+        var productModel = new ProductModel();
+        productModel.setProductId("1");
+        productModel.setName("product");
+
+        var productModel1 = new ProductModel();
+        productModel1.setProductId("1");
+        productModel1.setName("productdfdfd");
+
+        var product = new Product();
+        product.setName("product");
+
+        //when
+        when(productRepository.findById(any())).thenReturn(Optional.of(product));
+        when(mapper.toEntity(any(ProductModel.class))).thenReturn(product);
+        when(productRepository.save(any(Product.class))).thenReturn(product);
+        when(mapper.toModel(any(Product.class))).thenReturn(productModel);
+
+        var editedProduct = repository.editProduct("1", productModel);
+
+        //then
+        assertEquals(editedProduct, productModel);
+    }
+
+    @Test
+    void deleteProduct() {
+        //given
+
+        //when
+        repository.deleteProduct("1");
+
+        //then
+        verify(productRepository).deleteById(1l);
     }
 }

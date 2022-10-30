@@ -1,6 +1,7 @@
 package com.example.petproject2.domain.services;
 
 import com.example.petproject2.domain.model.ProductModel;
+import com.example.petproject2.persistance.repository.MongoRepository;
 import com.example.petproject2.persistance.repository.PostgresRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -24,5 +25,15 @@ public class ProductServiceImpl implements ProductService {
     @Transactional
     public ProductModel saveProduct(ProductModel productModel){
         return repository.saveProduct(productModel);
+    }
+
+    @Transactional
+    public ProductModel editProduct(String productId, ProductModel productModel) {
+        return repository.editProduct(productId, productModel);
+    }
+
+    @Transactional
+    public void deleteProductById(String productId) {
+        repository.deleteProduct(productId);
     }
 }
