@@ -3,25 +3,21 @@ package com.example.petproject2.persistance.entity.MongoEntity;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
 
-import java.util.ArrayList;
-import java.util.List;
+import javax.persistence.*;
+import java.util.HashSet;
+import java.util.Set;
 
 @Document
 @Getter
 @Setter
 @NoArgsConstructor
-public class MongoCustomer {
+public class MongoShoppingCart {
     @Id
-    private String customerId;
-    private String name;
+    private String shoppingCardId;
 
     @DBRef
-    private MongoShoppingCart shoppingCard;
-
-    @DBRef
-    List<MongoProduct> mongoProducts = new ArrayList<>();
+    private Set<MongoProduct> products = new HashSet<>();
 }

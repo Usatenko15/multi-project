@@ -1,5 +1,7 @@
 package com.example.petproject2.domain.services;
 
+import com.example.petproject2.domain.model.ProductModel;
+import com.example.petproject2.domain.model.ShoppingCartModel;
 import com.example.petproject2.domain.model.CustomerModel;
 import com.example.petproject2.persistance.repository.PostgresRepository;
 import lombok.RequiredArgsConstructor;
@@ -19,8 +21,10 @@ public class CustomerServiceImpl implements CustomerService {
     }
 
     @Transactional
-    public CustomerModel saveCustomer(CustomerModel customerModel) {
-        return repository.saveCustomer(customerModel);
+    public CustomerModel createCustomer(CustomerModel customerModel) {
+        CustomerModel customer = repository.saveCustomer(customerModel);
+        repository.createBucket(customer);
+        return customer;
     }
 
     @Transactional
@@ -31,5 +35,27 @@ public class CustomerServiceImpl implements CustomerService {
     @Transactional(readOnly = true)
     public CustomerModel findById(String customerId) {
         return repository.findById(customerId);
+    }
+
+    @Transactional
+    public void deleteCustomerById(String customerId) {
+        repository.deleteCustomer(customerId);
+    }
+
+    @Transactional
+    public CustomerModel editCustomer(String customerId, CustomerModel customerModel) {
+        return repository.editCustomer(customerId, customerModel);
+    }
+
+    @Transactional(readOnly = true)
+    public ShoppingCartModel getCustomerBucket(String customerId) {
+        CustomerModel customerModel = findById(customerId);
+        customerModel.getShoppingCard().setSummary(customerModel.getShoppingCard().getProducts().stream().mapToDouble(ProductModel::getPrice).sum());
+        return customerModel.getShoppingCard();
+    }
+
+    @Transactional
+    public ShoppingCartModel addProductToBucket(String customerId, String productId) {
+        return repository.addProductToBucket(customerId, productId);
     }
 }

@@ -2,12 +2,15 @@ package com.example.petproject2.persistance.mappers;
 
 import com.example.petproject2.domain.model.CustomerModel;
 import com.example.petproject2.domain.model.ProductModel;
+import com.example.petproject2.domain.model.ShoppingCartModel;
 import com.example.petproject2.persistance.entity.DynamoEntity.DynamoCustomer;
 import com.example.petproject2.persistance.entity.DynamoEntity.DynamoProduct;
 import org.mapstruct.Mapper;
 
 @Mapper(componentModel = "spring")
 public interface DynamoMapper {
+//    DynamoShoppingCard toModel(ShoppingCardModel shoppingCardModel);
+//    ShoppingCardModel toEntity(DynamoShoppingCard shoppingCardModel);
     default DynamoCustomer toEntity(CustomerModel customerModel){
         DynamoCustomer customer = new DynamoCustomer();
         customer.setName(customerModel.getName());
@@ -37,4 +40,6 @@ public interface DynamoMapper {
         productModel.setName(product.getName());
         return productModel;
     }
+
+    ShoppingCartModel toModel(String shoppingCard);
 }

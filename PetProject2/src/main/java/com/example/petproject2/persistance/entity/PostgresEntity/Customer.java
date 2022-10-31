@@ -19,6 +19,10 @@ public class Customer {
     @Column(name = "customer_name", nullable = false)
     private String name;
 
+    @OneToOne
+    @JoinColumn(name = "shopping_cart_id")
+    private ShoppingCart shoppingCart;
+
     @OneToMany(mappedBy = "customer", fetch = FetchType.LAZY, orphanRemoval = true)
     private Set<CustomerProduct> customerProducts = new HashSet<>();
 }

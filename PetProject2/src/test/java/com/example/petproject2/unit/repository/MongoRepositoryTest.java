@@ -348,6 +348,81 @@ class MongoRepositoryTest {
     }
 
     @Test
+    void editCustomerCallsMapsModelToEntities() {
+        //given
+        var customerModel = new CustomerModel();
+        customerModel.setCustomerId("1");
+        customerModel.setName("customer");
+
+        var customer = new MongoCustomer();
+        customer.setName("customer");
+        customer.setCustomerId("1");
+
+        //when
+        when(customerRepository.findById("1")).thenReturn(Optional.of(customer));
+        repository.editCustomer("1", customerModel);
+
+        //then
+        verify(mapper).toEntity(customerModel);
+    }
+
+    @Test
+    void editCustomerCallsRepositorySave() {
+        //given
+        var customerModel = new CustomerModel();
+        customerModel.setName("customer");
+
+        var customer = new MongoCustomer();
+        customer.setName("customer");
+
+        //when
+        when(customerRepository.findById("1")).thenReturn(Optional.of(customer));
+        when(mapper.toEntity(any(CustomerModel.class))).thenReturn(customer);
+        repository.editCustomer("1", customerModel);
+
+        //then
+        verify(customerRepository).save(customer);
+    }
+
+    @Test
+    void editCustomerReturnsMappedCustomer() {
+        //given
+        var customerModel = new CustomerModel();
+        customerModel.setCustomerId("1");
+        customerModel.setName("customer");
+
+        var customerModel1 = new CustomerModel();
+        customerModel1.setCustomerId("1");
+        customerModel1.setName("customer");
+
+        var customer = new MongoCustomer();
+        customer.setName("customer");
+
+        //when
+        when(customerRepository.findById("1")).thenReturn(Optional.of(customer));
+        when(mapper.toEntity(any(CustomerModel.class))).thenReturn(customer);
+        when(customerRepository.save(any(MongoCustomer.class))).thenReturn(customer);
+        when(mapper.toModel(any(MongoCustomer.class))).thenReturn(customerModel);
+
+        repository.editCustomer("1", customerModel);
+
+        //then
+        verify(customerRepository).save(customer);
+    }
+
+    @Test
+    void deleteCustomer() {
+        //given
+
+
+        //when
+        repository.deleteCustomer("1");
+
+        //then
+        verify(customerRepository).deleteById("1");
+    }
+
+    @Test
     void findAllProductsCallsProductRepository() {
         //given
 
@@ -498,5 +573,81 @@ class MongoRepositoryTest {
 
         //then
         assertEquals(repository.findProductById(productId), productModel);
+    }
+
+    @Test
+    void editProductCallsMapsModelToEntities() {
+        //given
+        var product = new MongoProduct();
+        product.setName("product");
+        product.setProductId("1");
+
+        var productModel = new ProductModel();
+        productModel.setProductId("1");
+        productModel.setName("product");
+
+        //when
+        when(productRepository.findById("1")).thenReturn(Optional.of(product));
+        repository.editProduct("1", productModel);
+
+        //then
+        verify(productRepository).findById("1");
+        verify(mapper).toEntity(productModel);
+    }
+
+    @Test
+    void editProductCallsRepositorySave() {
+        //given
+        var productModel = new ProductModel();
+        productModel.setName("product");
+
+        var product = new MongoProduct();
+        product.setName("product");
+
+        //when
+        when(productRepository.findById("1")).thenReturn(Optional.of(product));
+        when(mapper.toEntity(any(ProductModel.class))).thenReturn(product);
+        repository.editProduct("1", productModel);
+
+        //then
+        verify(productRepository).save(product);
+    }
+
+    @Test
+    void editProductReturnsMappedCustomer() {
+        //given
+        var productModel = new ProductModel();
+        productModel.setName("product");
+
+        var productModel1 = new ProductModel();
+        productModel1.setProductId("1");
+        productModel1.setName("product");
+
+        var product = new MongoProduct();
+        product.setName("product");
+
+        //when
+        when(productRepository.findById("1")).thenReturn(Optional.of(product));
+        when(mapper.toEntity(any(ProductModel.class))).thenReturn(product);
+        product.setProductId("1");
+        when(productRepository.save(any(MongoProduct.class))).thenReturn(product);
+        productModel.setProductId("1");
+        when(mapper.toModel(any(MongoProduct.class))).thenReturn(productModel);
+
+        repository.editProduct("1", productModel);
+        //then
+        assertEquals(repository.saveProduct(productModel), productModel1);
+    }
+
+    @Test
+    void deleteProduct() {
+        //given
+
+
+        //when
+        repository.deleteProduct("1");
+
+        //then
+        verify(productRepository).deleteById("1");
     }
 }

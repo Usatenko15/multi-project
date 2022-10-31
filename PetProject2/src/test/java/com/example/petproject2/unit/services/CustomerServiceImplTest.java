@@ -2,6 +2,7 @@ package com.example.petproject2.unit.services;
 
 import com.example.petproject2.domain.model.CustomerModel;
 import com.example.petproject2.domain.model.ProductModel;
+import com.example.petproject2.domain.model.ShoppingCartModel;
 import com.example.petproject2.domain.services.CustomerServiceImpl;
 import com.example.petproject2.persistance.repository.PostgresRepository;
 import org.junit.jupiter.api.Test;
@@ -13,6 +14,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -25,7 +27,7 @@ class CustomerServiceImplTest {
     private CustomerServiceImpl customerService;
 
     @Test
-    void findAllCustomersCallsService() {
+    void findAllCustomersCallsRepository() {
         //given
 
         //when
@@ -56,12 +58,12 @@ class CustomerServiceImplTest {
     }
 
     @Test
-    void saveCustomerCallsService() {
+    void saveCustomerCallsRepository() {
         //given
         CustomerModel customer = new CustomerModel();
 
         //when
-        customerService.saveCustomer(customer);
+        customerService.createCustomer(customer);
 
         //then
         verify(repository).saveCustomer(customer);
@@ -82,11 +84,11 @@ class CustomerServiceImplTest {
         when(repository.saveCustomer(customer)).thenReturn(customer);
 
         //then
-        assertEquals(expectedCustomer, customerService.saveCustomer(customer));
+        assertEquals(expectedCustomer, customerService.createCustomer(customer));
     }
 
     @Test
-    void saveProductToCustomerCallsService() {
+    void saveProductToCustomerCallsRepository() {
         //given
         String customerId = "1";
         String productId = "1";
@@ -117,7 +119,7 @@ class CustomerServiceImplTest {
     }
 
     @Test
-    void findByIdCallsService() {
+    void findByIdCallsRepository() {
         //given
         String customerId = "1";
 
@@ -141,4 +143,69 @@ class CustomerServiceImplTest {
         //then
         assertEquals(customer, customerService.findById(customer.getCustomerId()));
     }
+
+    @Test
+    void editProductCallsRepository() {
+        //given
+        CustomerModel customerModel = new CustomerModel();
+
+        //when
+        customerService.editCustomer("1", customerModel);
+
+        //then
+        verify(repository).editCustomer("1", customerModel);
+    }
+
+    @Test
+    void editProduct() {
+        CustomerModel customer = new CustomerModel();
+        customer.setCustomerId("1");
+        customer.setName("fdd");
+
+        CustomerModel editedCustomer = new CustomerModel();
+        customer.setCustomerId("1");
+        customer.setName("fddgggggggg");
+
+        when(repository.editCustomer("1", customer)).thenReturn(editedCustomer);
+        assertEquals(editedCustomer,customerService.editCustomer("1", customer));
+    }
+
+    @Test
+    void deleteCustomer() {
+        //given
+
+        //when
+        customerService.deleteCustomerById("1");
+
+        //then
+        verify(repository).deleteCustomer(any());
+    }
+
+    @Test
+    void getCustomerShoppingCard() {
+        //given
+
+        //when
+        when(repository.findById("1")).thenReturn(new CustomerModel());
+        customerService.getCustomerBucket("1");
+
+        //then
+        verify(repository).findById("1");
+    }
+
+    @Test
+    void addProductToShoppingCard() {
+        //given
+        String customerId = "1";
+        String productId = "1";
+
+
+        //when
+        when(repository.addProductToBucket(customerId, productId)).thenReturn(new ShoppingCartModel());
+        customerService.addProductToBucket(customerId, productId);
+
+        //then
+        verify(repository).addProductToBucket(customerId, productId);
+    }
+
 }

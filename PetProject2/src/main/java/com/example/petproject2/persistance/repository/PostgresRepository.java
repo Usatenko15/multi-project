@@ -1,11 +1,14 @@
 package com.example.petproject2.persistance.repository;
 
+import com.example.petproject2.domain.model.ShoppingCartModel;
 import com.example.petproject2.domain.model.CustomerModel;
 import com.example.petproject2.domain.model.ProductModel;
+import com.example.petproject2.persistance.entity.PostgresEntity.ShoppingCart;
 import com.example.petproject2.persistance.entity.PostgresEntity.Customer;
 import com.example.petproject2.persistance.entity.PostgresEntity.CustomerProduct;
 import com.example.petproject2.persistance.entity.PostgresEntity.Product;
 import com.example.petproject2.persistance.mappers.PostgresMapper;
+import com.example.petproject2.persistance.repository.postgresrepository.BucketRepository;
 import com.example.petproject2.persistance.repository.postgresrepository.CustomerProductRepository;
 import com.example.petproject2.persistance.repository.postgresrepository.CustomerRepository;
 import com.example.petproject2.persistance.repository.postgresrepository.ProductRepository;
@@ -23,6 +26,7 @@ public class PostgresRepository implements MainRepository {
     private final CustomerRepository customerRepository;
     private final ProductRepository productRepository;
     private final CustomerProductRepository customerProductRepository;
+    private final BucketRepository bucketRepository;
     private final PostgresMapper postgresMapper;
 
 
@@ -55,12 +59,13 @@ public class PostgresRepository implements MainRepository {
         return postgresMapper.toModel(customer);
     }
 
-
+    @Transactional(readOnly = true)
     public List<ProductModel> findAllProducts() {
         List<Product> products = productRepository.findAll();
         return products.stream().map(postgresMapper::toModel).collect(Collectors.toList());
     }
 
+    @Transactional(readOnly = true)
     public ProductModel findProductById(String productId) {
         return postgresMapper.toModel(productRepository.findById(Long.parseLong(productId)).orElseThrow());
     }
@@ -69,6 +74,50 @@ public class PostgresRepository implements MainRepository {
     public ProductModel saveProduct(ProductModel productModel) {
         Product product = postgresMapper.toEntity(productModel);
         return postgresMapper.toModel(productRepository.save(product));
+    }
+
+    @Transactional
+    public ProductModel editProduct(String productId, ProductModel productModel) {
+        productRepository.findById(Long.parseLong(productId)).orElseThrow();
+        productModel.setProductId(productId);
+        Product product = postgresMapper.toEntity(productModel);
+        return postgresMapper.toModel(productRepository.save(product));
+    }
+
+    @Transactional
+    public CustomerModel editCustomer(String customerId, CustomerModel customerModel) {
+        customerRepository.findById(Long.parseLong(customerId)).orElseThrow();
+        customerModel.setCustomerId(customerId);
+        Customer customer = postgresMapper.toEntity(customerModel);
+        return postgresMapper.toModel(customerRepository.save(customer));
+    }
+
+    @Transactional
+    public void deleteProduct(String productId) {
+        productRepository.deleteById(Long.parseLong(productId));
+    }
+
+    @Transactional
+    public void deleteCustomer(String customerId) {
+        customerRepository.deleteById(Long.parseLong(customerId));
+    }
+
+    @Transactional
+    public ShoppingCartModel createBucket(CustomerModel customerModel) {
+        ShoppingCart shoppingCart = new ShoppingCart();
+        shoppingCart = bucketRepository.save(shoppingCart);
+        Customer customer = postgresMapper.toEntity(customerModel);
+        customer.setShoppingCart(shoppingCart);
+        customerRepository.save(customer);
+        return postgresMapper.toModel(customer.getShoppingCart());
+    }
+
+    @Transactional
+    public ShoppingCartModel addProductToBucket(String customerId, String productId) {
+        Customer customer = customerRepository.findById(Long.parseLong(customerId)).orElseThrow();
+        Product product = productRepository.findById(Long.parseLong(productId)).orElseThrow();
+        customer.getShoppingCart().getProducts().add(product);
+        return postgresMapper.toModel(customer.getShoppingCart());
     }
 
 }

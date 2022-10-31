@@ -13,6 +13,7 @@ import java.util.List;
 public class ProductModel {
     private String productId;
     private String name;
+    private double price;
     private List<CustomerModel> customers = new ArrayList<>();
 
     public ProductModel(MongoProduct product) {

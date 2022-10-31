@@ -23,5 +23,7 @@ public class DynamoProduct {
     @DynamoDBAttribute
     private String name;
     @DynamoDBAttribute
+    private double price;
+    @DynamoDBAttribute
     List<String> customers = new ArrayList<>();
 }

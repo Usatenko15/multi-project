@@ -3,10 +3,12 @@ package com.example.petproject2.persistance.repository;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapper;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBScanExpression;
 import com.amazonaws.services.dynamodbv2.datamodeling.PaginatedScanList;
+import com.example.petproject2.domain.model.ShoppingCartModel;
 import com.example.petproject2.domain.model.CustomerModel;
 import com.example.petproject2.domain.model.ProductModel;
 import com.example.petproject2.persistance.entity.DynamoEntity.DynamoCustomer;
 import com.example.petproject2.persistance.entity.DynamoEntity.DynamoProduct;
+import com.example.petproject2.persistance.entity.DynamoEntity.DynamoShoppingCart;
 import com.example.petproject2.persistance.mappers.DynamoMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
@@ -24,7 +26,6 @@ public class DynamoRepository implements MainRepository {
     @Autowired
     private DynamoMapper mapper;
 
-    @Override
     public List<CustomerModel> findAllCustomers() {
         PaginatedScanList<DynamoCustomer> customers = dynamoDBMapper.scan(DynamoCustomer.class, new DynamoDBScanExpression());
         return customers.parallelStream().map(customer -> {
@@ -41,7 +42,6 @@ public class DynamoRepository implements MainRepository {
         }).collect(Collectors.toList());
     }
 
-    @Override
     @Transactional
     public CustomerModel saveCustomer(CustomerModel customerModel) {
         DynamoCustomer customer = mapper.toEntity(customerModel);
@@ -49,7 +49,6 @@ public class DynamoRepository implements MainRepository {
         return mapper.toModel(customer);
     }
 
-    @Override
     @Transactional
     public CustomerModel saveProductToCustomer(String customerId, String productId) {
         DynamoCustomer customer = dynamoDBMapper.load(DynamoCustomer.class, customerId);
@@ -61,7 +60,7 @@ public class DynamoRepository implements MainRepository {
         return mapper.toModel(customer);
     }
 
-    @Override
+    @Transactional
     public CustomerModel findById(String customerId) {
         DynamoCustomer customer = dynamoDBMapper.load(DynamoCustomer.class, customerId);
         var customerModel = mapper.toModel(customer);
@@ -76,7 +75,7 @@ public class DynamoRepository implements MainRepository {
         return customerModel;
     }
 
-    @Override
+    @Transactional
     public List<ProductModel> findAllProducts() {
         PaginatedScanList<DynamoProduct> products = dynamoDBMapper.scan(DynamoProduct.class, new DynamoDBScanExpression());
         return products.parallelStream().map(product -> {
@@ -93,7 +92,7 @@ public class DynamoRepository implements MainRepository {
         }).collect(Collectors.toList());
     }
 
-    @Override
+    @Transactional
     public ProductModel findProductById(String productId) {
         DynamoProduct product = dynamoDBMapper.load(DynamoProduct.class, productId);
         var productModel = mapper.toModel(product);
@@ -108,10 +107,53 @@ public class DynamoRepository implements MainRepository {
         return productModel;
     }
 
-    @Override
+    @Transactional
     public ProductModel saveProduct(ProductModel productModel) {
         DynamoProduct product = mapper.toEntity(productModel);
         dynamoDBMapper.save(product);
         return mapper.toModel(product);
+    }
+
+    @Transactional
+    public ProductModel editProduct(String productId, ProductModel productModel) {
+        DynamoProduct product = dynamoDBMapper.load(DynamoProduct.class, productId);
+        productModel.setProductId(productId);
+        dynamoDBMapper.save(product);
+        return productModel;
+    }
+
+    @Transactional
+    public CustomerModel editCustomer(String customerId, CustomerModel customerModel) {
+        DynamoCustomer customer = dynamoDBMapper.load(DynamoCustomer.class, customerId);
+        customerModel.setCustomerId(customerId);
+        dynamoDBMapper.save(customer);
+        return customerModel;
+    }
+
+    @Transactional
+    public void deleteProduct(String productId) {
+        DynamoProduct product = dynamoDBMapper.load(DynamoProduct.class, productId);
+        dynamoDBMapper.delete(product);
+    }
+
+    @Transactional
+    public void deleteCustomer(String customerId) {
+        DynamoCustomer customer = dynamoDBMapper.load(DynamoCustomer.class, customerId);
+        dynamoDBMapper.delete(customer);
+    }
+
+    @Override
+    public ShoppingCartModel createBucket(CustomerModel customer) {
+        DynamoShoppingCart shoppingCard = new DynamoShoppingCart();
+        dynamoDBMapper.save(shoppingCard);
+        DynamoCustomer dynamoCustomer = dynamoDBMapper.load(DynamoCustomer.class, customer.getCustomerId());
+        dynamoCustomer.setShoppingCard(shoppingCard.getShoppingCardId());
+        dynamoDBMapper.save(dynamoCustomer);
+        return mapper.toModel(dynamoCustomer.getShoppingCard());
+    }
+
+    @Override
+    public ShoppingCartModel addProductToBucket(String customerId, String productId) {
+        return null;
     }
 }

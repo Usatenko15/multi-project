@@ -15,6 +15,8 @@ public class CustomerModel {
     private String name;
     List<ProductModel> products = new ArrayList<>();
 
+    private ShoppingCartModel shoppingCard;
+
     public CustomerModel(MongoCustomer customer) {
         this.customerId = customer.getCustomerId();
         this.name = customer.getName();

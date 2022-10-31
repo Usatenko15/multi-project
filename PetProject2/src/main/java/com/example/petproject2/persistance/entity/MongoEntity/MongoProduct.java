@@ -18,6 +18,7 @@ public class MongoProduct {
     @Id
     private String productId;
     private String name;
+    private double price;
 
     @DBRef
     List<MongoCustomer> mongoCustomers = new ArrayList<>();
